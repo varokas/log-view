@@ -1,0 +1,8 @@
+version: '2'
+services:
+  db:
+    image: redis:alpine
+    volumes:
+      - ./data/redis:/data
+    ports:
+      - 6379:6379

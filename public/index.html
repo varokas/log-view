@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Log Viewer</title>
+  <meta name="description" content="">
+  <meta name="author" content="">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href="//fonts.googleapis.com/css?family=Raleway:400,300,600" rel="stylesheet" type="text/css">
+
+  <link rel="stylesheet" href="css/normalize.css">
+  <link rel="stylesheet" href="css/skeleton.css">
+
+  <link rel="icon" type="image/png" href="images/favicon.png">
+</head>
+<body>
+  <div class="container">
+    <div class="row" style="margin-top: 10px">
+      <div class="one-full column">
+        <h4>Log</h4>
+        <table id="log" class="u-full-width">
+          <tr>
+            <th style="width:10em">Timestamp</th>
+            <th>Data</th>
+          </tr>
+        </table>
+      </div>
+    </div>
+  </div>
+  <script src="https://code.jquery.com/jquery-2.2.4.min.js"></script>
+  <script src="/socket.io/socket.io.js"></script>
+  <script type="text/javascript">
+    var socket = io();
+
+    function tableRow(msg) {
+      return '<tr><td>' + new Date(msg.timestamp).toLocaleString() + "</td><td>" + JSON.stringify(msg.data) + "</td></tr>"
+    }
+
+    $(document).ready( () => {
+      $.get("/logs").then( (data) => {
+        $('#log tr:first').after(
+          data
+            .map(d => tableRow(d))
+            .reverse()
+            .join("\n")
+        );
+      })
+
+      socket.on('log_insert', (msg) => {
+        $('#log tr:first').after(tableRow(msg));
+      });
+    })
+  </script>
+</body>
+</html>
